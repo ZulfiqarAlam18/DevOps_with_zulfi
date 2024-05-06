@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Function to update packages on Ubuntu
+update_ubuntu() {
+    echo "Updating Ubuntu packages..."
+    sudo apt update && sudo apt upgrade -y
+}
+
+# Function to update packages on CentOS
+update_centos() {
+    echo "Updating CentOS packages..."
+    sudo yum update -y
+}
+
+# Function to update packages on Debian
+update_debian() {
+    echo "Updating Debian packages..."
+    sudo apt-get update && sudo apt-get upgrade -y
+}
+
+# Detecting the Linux distribution
+if [ -r /etc/os-release ]; then            # Check if /etc/os-release file exists and is readable
+    . /etc/os-release                      # Load variables from /etc/os-release into the script
+    OS=$NAME                              # Get the value of the NAME variable from /etc/os-release
+elif [ -r /etc/lsb-release ]; then        # Check if /etc/lsb-release file exists and is readable
+    . /etc/lsb-release                    # Load variables from /etc/lsb-release into the script
+    OS=$DISTRIB_ID                        # Get the value of the DISTRIB_ID variable from /etc/lsb-release
+else
+    echo "Unable to determine the Linux distribution!"    # Display an error message if neither file is found
+    exit 1
+fi
+
+# Check the detected Linux distribution and call the appropriate update function
+if [ "$OS" == "Ubuntu" ] || [ "$OS" == "Debian GNU/Linux" ]; then    # Check if the OS variable contains "Ubuntu" or "Debian GNU/Linux"
+    update_ubuntu                                                   # Call the update_ubuntu function if the condition is true
+elif [ "$OS" == "CentOS Linux" ]; then                              # Check if the OS variable contains "CentOS Linux"
+    update_centos                                                  # Call the update_centos function if the condition is true
+else
+    echo "Unsupported Linux distribution: $OS"                    # Display an error message if the OS is unsupported
+fi
